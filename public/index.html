@@ -1079,6 +1079,9 @@
         let countdownInterval = null;
         let videoStream = null;
 
+        // API Base URL - Update this to your deployed backend
+        const API_BASE = 'https://another-try-7x78.onrender.com/api';
+
         // ==================== Initialization ====================
         document.addEventListener('DOMContentLoaded', () => {
             // Check for stored session
@@ -1120,7 +1123,7 @@
             const password = document.getElementById('login-password').value;
             
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch(`${API_BASE}/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
@@ -1204,19 +1207,19 @@
         }
 
         async function loadStudents() {
-            const response = await fetch('/api/students');
+            const response = await fetch(`${API_BASE}/students`);
             const result = await response.json();
             students = result.data;
         }
 
         async function loadSessions() {
-            const response = await fetch('/api/sessions');
+            const response = await fetch(`${API_BASE}/sessions`);
             const result = await response.json();
             sessions = result.data;
         }
 
         async function loadAttendance() {
-            const response = await fetch('/api/attendance');
+            const response = await fetch(`${API_BASE}/attendance`);
             const result = await response.json();
             attendance = result.data;
         }
@@ -1273,7 +1276,7 @@
             const duration = parseInt(document.getElementById('session-duration').value);
             
             try {
-                const response = await fetch('/api/sessions', {
+                const response = await fetch(`${API_BASE}/sessions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ courseName, date, duration })
@@ -1356,7 +1359,7 @@
             }
             
             try {
-                const response = await fetch(`/api/sessions/${sessionId}/qr`);
+                const response = await fetch(`${API_BASE}/sessions/${sessionId}/qr`);
                 const result = await response.json();
                 
                 if (result.success) {
@@ -1483,7 +1486,7 @@
                 const parsedData = JSON.parse(qrData);
                 
                 // Mark attendance for student
-                const response = await fetch('/api/attendance', {
+                const response = await fetch(`${API_BASE}/attendance`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
