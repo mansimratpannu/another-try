@@ -27,19 +27,13 @@ const db = {
 function initializeData() {
     // Sample users (teacher and students)
     db.users = [
-        { id: '1', name: 'Mr. Anderson', email: 'teacher@school.com', password: 'teacher123', role: 'teacher' },
-        { id: '2', name: 'John Smith', email: 'john@school.com', password: 'student123', role: 'student' },
-        { id: '3', name: 'Jane Doe', email: 'jane@school.com', password: 'student123', role: 'student' },
-        { id: '4', name: 'Mike Johnson', email: 'mike@school.com', password: 'student123', role: 'student' },
-        { id: '5', name: 'Sarah Williams', email: 'sarah@school.com', password: 'student123', role: 'student' }
+        { id: '1', name: 'Harsimran Singh', email: 'harsimran@school.com', password: 'maibhagoteacher', role: 'teacher' },
+        { id: '2', name: 'Mansimrat', email: 'kmansimrat16@gmail.com', password: 'maibhagostudent', role: 'student' }
     ];
     
     // Sample students
     db.students = [
-        { id: '2', name: 'John Smith', email: 'john@school.com', studentId: 'STU001' },
-        { id: '3', name: 'Jane Doe', email: 'jane@school.com', studentId: 'STU002' },
-        { id: '4', name: 'Mike Johnson', email: 'mike@school.com', studentId: 'STU003' },
-        { id: '5', name: 'Sarah Williams', email: 'sarah@school.com', studentId: 'STU004' }
+        { id: '2', name: 'Mansimrat', email: 'kmansimrat16@gmail.com', studentId: 'STU001' }
     ];
     
     console.log('Database initialized with sample data');
