@@ -50,7 +50,7 @@ app.get('/api/students', (req, res) => {
 
 // Add new student
 app.post('/api/students', (req, res) => {
-    const { name, email, studentId } = req.body;
+    const { name, email, studentId, password } = req.body;
     
     if (!name || !email || !studentId) {
         return res.status(400).json({ success: false, message: 'All fields are required' });
@@ -64,6 +64,17 @@ app.post('/api/students', (req, res) => {
     };
     
     db.students.push(newStudent);
+    
+    // Also create a user account for login (default password is student123)
+    const userPassword = password || 'student123';
+    db.users.push({
+        id: newStudent.id,
+        name,
+        email,
+        password: userPassword,
+        role: 'student'
+    });
+    
     res.json({ success: true, data: newStudent, message: 'Student added successfully' });
 });
 

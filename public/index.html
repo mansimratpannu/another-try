@@ -864,6 +864,61 @@
                 <div class="card">
                     <div class="card-header">
                         <h2 class="card-title">
+                            <i class="fas fa-user-plus"></i> Add New Student
+                        </h2>
+                    </div>
+                    <form id="student-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Student Name</label>
+                                <input type="text" class="form-input" id="student-name" placeholder="Enter student name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-input" id="student-email" placeholder="Enter email" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Student ID</label>
+                                <input type="text" class="form-input" id="student-id" placeholder="Enter student ID" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Password</label>
+                                <input type="password" class="form-input" id="student-password" placeholder="Enter password (default: student123)">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Student
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <i class="fas fa-users"></i> All Students
+                        </h2>
+                        <button class="btn btn-outline btn-sm" onclick="loadStudents()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Student ID</th>
+                                </tr>
+                            </thead>
+                            <tbody id="students-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
                             <i class="fas fa-plus-circle"></i> Create New Session
                         </h2>
                     </div>
@@ -1102,6 +1157,9 @@
             // Login form
             document.getElementById('login-form').addEventListener('submit', handleLogin);
             
+            // Student form (teacher only)
+            document.getElementById('student-form').addEventListener('submit', addStudent);
+            
             // Session form (teacher only)
             document.getElementById('session-form').addEventListener('submit', createSession);
             
@@ -1210,6 +1268,53 @@
             const response = await fetch(`${API_BASE}/students`);
             const result = await response.json();
             students = result.data;
+            
+            // Update total students count
+            document.getElementById('total-students').textContent = students.length;
+            
+            // Display students in table
+            const tbody = document.getElementById('students-body');
+            if (tbody) {
+                tbody.innerHTML = students.map(s => `
+                    <tr>
+                        <td>${s.name}</td>
+                        <td>${s.email}</td>
+                        <td>${s.studentId}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        async function addStudent(e) {
+            e.preventDefault();
+            showLoading();
+            
+            const name = document.getElementById('student-name').value;
+            const email = document.getElementById('student-email').value;
+            const studentId = document.getElementById('student-id').value;
+            const password = document.getElementById('student-password').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/students`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, studentId, password })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showToast('Student added successfully', 'success');
+                    document.getElementById('student-form').reset();
+                    loadStudents();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error adding student', 'error');
+            }
+            
+            hideLoading();
         }
 
         async function loadSessions() {
