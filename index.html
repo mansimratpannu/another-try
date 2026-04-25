@@ -118,76 +118,6 @@
             margin-top: 1rem;
         }
 
-        .demo-accounts {
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-            text-align: left;
-        }
-
-        .demo-accounts h4 {
-            font-size: 0.85rem;
-            color: var(--gray);
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .demo-account {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 12px;
-            background: var(--light);
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .demo-account:hover {
-            background: #e0e5e8;
-        }
-
-        .demo-account-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .demo-account-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 0.9rem;
-        }
-
-        .demo-account-icon.teacher {
-            background: var(--primary);
-        }
-
-        .demo-account-icon.student {
-            background: var(--success);
-        }
-
-        .demo-account-details {
-            font-size: 0.85rem;
-        }
-
-        .demo-account-details strong {
-            display: block;
-            color: var(--dark);
-        }
-
-        .demo-account-details span {
-            color: var(--gray);
-            font-size: 0.75rem;
-        }
-
         /* Header */
         .header {
             background: var(--white);
@@ -766,33 +696,7 @@
                 </button>
             </form>
             
-            <div class="demo-accounts">
-                <h4>Demo Accounts</h4>
-                <div class="demo-account" onclick="fillLogin('teacher@school.com', 'teacher123')">
-                    <div class="demo-account-info">
-                        <div class="demo-account-icon teacher">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                        <div class="demo-account-details">
-                            <strong>Teacher</strong>
-                            <span>teacher@school.com / teacher123</span>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-right" style="color: var(--gray);"></i>
-                </div>
-                <div class="demo-account" onclick="fillLogin('john@school.com', 'student123')">
-                    <div class="demo-account-info">
-                        <div class="demo-account-icon student">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div class="demo-account-details">
-                            <strong>Student</strong>
-                            <span>john@school.com / student123</span>
-                        </div>
-                    </div>
-                    <i class="fas fa-chevron-right" style="color: var(--gray);"></i>
-                </div>
-            </div>
+
         </div>
     </div>
 
@@ -1168,11 +1072,6 @@
         }
 
         // ==================== Login Functions ====================
-        function fillLogin(email, password) {
-            document.getElementById('login-email').value = email;
-            document.getElementById('login-password').value = password;
-        }
-
         async function handleLogin(e) {
             e.preventDefault();
             showLoading();
