@@ -1456,14 +1456,21 @@
             resultDiv.className = 'scan-result';
             
             try {
-                const parsedData = JSON.parse(qrData);
+                // Check if QR data is a URL (contains http/https) or a plain session ID
+                let qrUrl = qrData;
+                
+                // If it's not a URL, try to parse as JSON to get the URL
+                if (!qrData.startsWith('http')) {
+                    const parsedData = JSON.parse(qrData);
+                    qrUrl = parsedData.url || JSON.stringify(parsedData);
+                }
                 
                 // Mark attendance for student
                 const response = await fetch(`${API_BASE}/attendance`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        qrData: qrData, 
+                        qrData: qrUrl, 
                         studentId: currentUser.id 
                     })
                 });
