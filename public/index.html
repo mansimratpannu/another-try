@@ -829,6 +829,10 @@
                     <form id="session-form">
                         <div class="form-row">
                             <div class="form-group">
+                                <label class="form-label">Subject</label>
+                                <input type="text" class="form-input" id="session-subject" placeholder="Enter subject" required>
+                            </div>
+                            <div class="form-group">
                                 <label class="form-label">Course Name</label>
                                 <input type="text" class="form-input" id="session-course" placeholder="Enter course name" required>
                             </div>
@@ -860,6 +864,7 @@
                         <table>
                             <thead>
                                 <tr>
+                                    <th>Subject</th>
                                     <th>Course</th>
                                     <th>Date</th>
                                     <th>Duration</th>
@@ -871,25 +876,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <i class="fas fa-qrcode"></i> Generate QR Code
-                        </h2>
-                    </div>
-                    <form id="generate-qr-form">
-                        <div class="form-group">
-                            <label class="form-label">Select Session</label>
-                            <select class="form-input" id="qr-session-select" required>
-                                <option value="">-- Select a Session --</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-qrcode"></i> Generate QR Code
-                        </button>
-                    </form>
                 </div>
 
                 <div class="card" id="qr-display-card" style="display: none;">
@@ -1067,8 +1053,6 @@
             // Session form (teacher only)
             document.getElementById('session-form').addEventListener('submit', createSession);
             
-            // Generate QR form (teacher only)
-            document.getElementById('generate-qr-form').addEventListener('submit', generateQR);
         }
 
         // ==================== Login Functions ====================
@@ -1275,6 +1259,7 @@
             e.preventDefault();
             showLoading();
             
+            const subject = document.getElementById('session-subject').value;
             const courseName = document.getElementById('session-course').value;
             const date = document.getElementById('session-date').value;
             const duration = parseInt(document.getElementById('session-duration').value);
@@ -1283,7 +1268,7 @@
                 const response = await fetch(`${API_BASE}/sessions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ courseName, date, duration })
+                    body: JSON.stringify({ subject, courseName, date, duration })
                 });
                 
                 const result = await response.json();
@@ -1309,7 +1294,7 @@
             tbody.innerHTML = '';
             
             if (sessions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No sessions yet</h3><p>Create a new session to get started</p></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No sessions yet</h3><p>Create a new session to get started</p></td></tr>';
                 return;
             }
             
@@ -1320,6 +1305,7 @@
                     '<span class="status-badge status-expired">Expired</span>';
                 
                 row.innerHTML = `
+                    <td>${session.subject}</td>
                     <td>${session.courseName}</td>
                     <td>${session.date}</td>
                     <td>${session.duration} min</td>
@@ -1336,31 +1322,19 @@
 
         // ==================== QR Code Generation ====================
         async function loadSessionsForSelect() {
-            const qrSelect = document.getElementById('qr-session-select');
             const filterSession = document.getElementById('filter-session');
             
             // Clear existing options
-            qrSelect.innerHTML = '<option value="">-- Select a Session --</option>';
             filterSession.innerHTML = '<option value="">All Sessions</option>';
             
             sessions.forEach(session => {
-                const option = `<option value="${session.id}">${session.courseName} - ${session.date}</option>`;
-                qrSelect.innerHTML += option;
+                const option = `<option value="${session.id}">${session.subject} - ${session.courseName} - ${session.date}</option>`;
                 filterSession.innerHTML += option;
             });
         }
 
-        async function generateQR(e) {
-            e.preventDefault();
+        async function viewQR(sessionId) {
             showLoading();
-            
-            const sessionId = document.getElementById('qr-session-select').value;
-            
-            if (!sessionId) {
-                showToast('Please select a session', 'warning');
-                hideLoading();
-                return;
-            }
             
             try {
                 const response = await fetch(`${API_BASE}/sessions/${sessionId}/qr`);
@@ -1369,12 +1343,15 @@
                 if (result.success) {
                     document.getElementById('qr-display-card').style.display = 'block';
                     document.getElementById('qr-image').src = result.data.qrCode;
-                    document.getElementById('qr-course-name').textContent = result.data.session.courseName;
+                    document.getElementById('qr-course-name').textContent = result.data.session.subject + ' - ' + result.data.session.courseName;
                     document.getElementById('qr-session-date').textContent = `Date: ${result.data.session.date}`;
                     document.getElementById('qr-generated-at').textContent = `Generated at: ${new Date(result.data.session.qrGeneratedAt).toLocaleTimeString()}`;
                     
                     // Start countdown
                     startCountdown(result.data.session.duration);
+                    
+                    // Scroll to QR code
+                    document.getElementById('qr-display-card').scrollIntoView({ behavior: 'smooth' });
                     
                     showToast('QR Code generated successfully', 'success');
                 } else {
@@ -1385,14 +1362,6 @@
             }
             
             hideLoading();
-        }
-
-        function viewQR(sessionId) {
-            document.getElementById('qr-session-select').value = sessionId;
-            // Trigger QR generation
-            setTimeout(() => {
-                document.getElementById('generate-qr-form').dispatchEvent(new Event('submit'));
-            }, 100);
         }
 
         function startCountdown(minutes) {

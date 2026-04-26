@@ -80,7 +80,7 @@ app.post('/api/students', (req, res) => {
 
 // Create attendance session
 app.post('/api/sessions', (req, res) => {
-    const { courseName, date, duration } = req.body;
+    const { subject, courseName, date, duration } = req.body;
     
     if (!courseName) {
         return res.status(400).json({ success: false, message: 'Course name is required' });
@@ -88,6 +88,7 @@ app.post('/api/sessions', (req, res) => {
     
     const session = {
         id: uuidv4(),
+        subject: subject || '',
         courseName: courseName || 'General Class',
         date: date || new Date().toISOString().split('T')[0],
         duration: duration || 30, // minutes
@@ -114,14 +115,9 @@ app.get('/api/sessions/:id/qr', async (req, res) => {
         return res.status(404).json({ success: false, message: 'Session not found' });
     }
     
-    // Create QR data with session info
-    const qrData = JSON.stringify({
-        sessionId: session.id,
-        courseName: session.courseName,
-        date: session.date,
-        timestamp: Date.now(),
-        validUntil: Date.now() + (session.duration * 60 * 1000)
-    });
+    // Create QR data as a URL that leads to the attendance site
+    const frontendURL = 'https://mansimratpannu.github.io/another-try';
+    const qrData = `${frontendURL}?sessionId=${session.id}&subject=${encodeURIComponent(session.subject)}&course=${encodeURIComponent(session.courseName)}&date=${encodeURIComponent(session.date)}&validUntil=${Date.now() + (session.duration * 60 * 1000)}`;
     
     try {
         const qrCodeDataURL = await QRCode.toDataURL(qrData, {
@@ -157,8 +153,10 @@ app.post('/api/attendance', (req, res) => {
     }
     
     try {
-        const parsedData = JSON.parse(qrData);
-        const { sessionId, validUntil } = parsedData;
+        // Parse URL parameters from QR data
+        const urlParams = new URL(qrData).searchParams;
+        const sessionId = urlParams.get('sessionId');
+        const validUntil = parseInt(urlParams.get('validUntil'));
         
         // Check if QR code is still valid
         if (Date.now() > validUntil) {
