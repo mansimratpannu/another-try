@@ -157,16 +157,26 @@ app.post('/api/attendance', (req, res) => {
         const urlParams = new URL(qrData).searchParams;
         const sessionId = urlParams.get('sessionId');
         const validUntil = parseInt(urlParams.get('validUntil'));
+        const subject = urlParams.get('subject');
+        const course = urlParams.get('course');
+        const date = urlParams.get('date');
         
         // Check if QR code is still valid
         if (Date.now() > validUntil) {
             return res.status(400).json({ success: false, message: 'QR code has expired' });
         }
         
-        // Find session
-        const session = db.sessions.find(s => s.id === sessionId);
+        // Find session or create temporary session from QR data
+        let session = db.sessions.find(s => s.id === sessionId);
+        
+        // If session doesn't exist, create a temporary one from QR data
         if (!session) {
-            return res.status(404).json({ success: false, message: 'Invalid session' });
+            session = {
+                id: sessionId,
+                subject: decodeURIComponent(subject || ''),
+                courseName: decodeURIComponent(course || 'Unknown Course'),
+                date: decodeURIComponent(date || new Date().toISOString().split('T')[0])
+            };
         }
         
         // Find student
