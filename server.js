@@ -353,5 +353,5 @@ app.get('/api/me', (req, res) => {
 // Start server
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`Mai Bhago Polytechnic - Attendance System is ready!`);
+    console.log(`Mai Bhago Government Polytechnic College for Girls - Attendance System is ready!`);
 });

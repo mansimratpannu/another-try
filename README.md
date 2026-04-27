@@ -1,4 +1,4 @@
-# Mai Bhago Polytechnic - Attendance System
+# Mai Bhago Government Polytechnic College for Girls - Attendance System
 
 A fully functional QR Code Attendance System with login for teachers and students.
 
