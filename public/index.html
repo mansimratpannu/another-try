@@ -829,12 +829,12 @@
                     <form id="session-form">
                         <div class="form-row">
                             <div class="form-group">
-                                <label class="form-label">Subject</label>
-                                <input type="text" class="form-input" id="session-subject" placeholder="Enter subject" required>
-                            </div>
-                            <div class="form-group">
                                 <label class="form-label">Course Name</label>
                                 <input type="text" class="form-input" id="session-course" placeholder="Enter course name" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Subject</label>
+                                <input type="text" class="form-input" id="session-subject" placeholder="Enter subject" required>
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Date</label>
@@ -864,8 +864,8 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th>Subject</th>
                                     <th>Course</th>
+                                    <th>Subject</th>
                                     <th>Date</th>
                                     <th>Duration</th>
                                     <th>Status</th>
@@ -891,6 +891,7 @@
                         </div>
                         <div class="session-info">
                             <h3 id="qr-course-name">Course Name</h3>
+                            <p id="qr-subject">Subject: --</p>
                             <p id="qr-session-date">Date: --</p>
                             <p id="qr-generated-at">Generated at: --</p>
                         </div>
@@ -918,6 +919,7 @@
                                     <th>Student Name</th>
                                     <th>Student ID</th>
                                     <th>Course</th>
+                                    <th>Subject</th>
                                     <th>Time</th>
                                     <th>Status</th>
                                 </tr>
@@ -992,6 +994,7 @@
                             <thead>
                                 <tr>
                                     <th>Course</th>
+                                    <th>Subject</th>
                                     <th>Date</th>
                                     <th>Time</th>
                                     <th>Status</th>
@@ -1238,7 +1241,7 @@
             tbody.innerHTML = '';
             
             if (myAttendance.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><i class="fas fa-inbox"></i><h3>No attendance yet</h3><p>Scan a QR code to mark your attendance</p></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fas fa-inbox"></i><h3>No attendance yet</h3><p>Scan a QR code to mark your attendance</p></td></tr>';
                 return;
             }
             
@@ -1246,6 +1249,7 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${record.courseName}</td>
+                    <td>${record.subject || '-'}</td>
                     <td>${new Date(record.markedAt).toLocaleDateString()}</td>
                     <td>${new Date(record.markedAt).toLocaleTimeString()}</td>
                     <td><span class="status-badge status-present">Present</span></td>
@@ -1305,8 +1309,8 @@
                     '<span class="status-badge status-expired">Expired</span>';
                 
                 row.innerHTML = `
-                    <td>${session.subject}</td>
                     <td>${session.courseName}</td>
+                    <td>${session.subject}</td>
                     <td>${session.date}</td>
                     <td>${session.duration} min</td>
                     <td>${status}</td>
@@ -1328,7 +1332,7 @@
             filterSession.innerHTML = '<option value="">All Sessions</option>';
             
             sessions.forEach(session => {
-                const option = `<option value="${session.id}">${session.subject} - ${session.courseName} - ${session.date}</option>`;
+                const option = `<option value="${session.id}">${session.courseName} - ${session.subject} - ${session.date}</option>`;
                 filterSession.innerHTML += option;
             });
         }
@@ -1343,7 +1347,8 @@
                 if (result.success) {
                     document.getElementById('qr-display-card').style.display = 'block';
                     document.getElementById('qr-image').src = result.data.qrCode;
-                    document.getElementById('qr-course-name').textContent = result.data.session.subject + ' - ' + result.data.session.courseName;
+                    document.getElementById('qr-course-name').textContent = result.data.session.courseName;
+                    document.getElementById('qr-subject').textContent = `Subject: ${result.data.session.subject}`;
                     document.getElementById('qr-session-date').textContent = `Date: ${result.data.session.date}`;
                     document.getElementById('qr-generated-at').textContent = `Generated at: ${new Date(result.data.session.qrGeneratedAt).toLocaleTimeString()}`;
                     
@@ -1547,7 +1552,7 @@
             tbody.innerHTML = '';
             
             if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><i class="fas fa-search"></i><h3>No records found</h3><p>Try adjusting your filters</p></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-search"></i><h3>No records found</h3><p>Try adjusting your filters</p></td></tr>';
                 return;
             }
             
@@ -1557,6 +1562,7 @@
                     <td>${record.studentName}</td>
                     <td>${record.studentIdNum}</td>
                     <td>${record.courseName}</td>
+                    <td>${record.subject || '-'}</td>
                     <td>${new Date(record.markedAt).toLocaleString()}</td>
                     <td><span class="status-badge status-present">Present</span></td>
                 `;

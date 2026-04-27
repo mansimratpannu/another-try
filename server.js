@@ -202,6 +202,7 @@ app.post('/api/attendance', (req, res) => {
             studentName: student.name,
             studentIdNum: student.studentId,
             courseName: session.courseName,
+            subject: session.subject,
             markedAt: new Date().toISOString()
         };
         
