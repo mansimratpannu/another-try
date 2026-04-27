@@ -176,21 +176,22 @@
         .user-info {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 8px 16px;
+            gap: 8px;
+            padding: 6px 12px;
             background: var(--light);
             border-radius: 8px;
         }
 
         .user-info .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
+            font-size: 0.8rem;
         }
 
         .user-info .avatar.teacher {
@@ -649,26 +650,63 @@
         /* Responsive */
         @media (max-width: 768px) {
             .header {
-                padding: 0.75rem 1rem;
-            }
-
-            .logo-icon {
-                width: 32px;
-                height: 32px;
-                font-size: 1rem;
-            }
-
-            .logo h1 {
-                font-size: 1rem;
-            }
-
-            .logo span {
-                font-size: 0.7rem;
+                padding: 0.5rem 0.75rem;
             }
 
             .header-content {
-                flex-direction: column;
-                gap: 1rem;
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+
+            .logo {
+                gap: 8px;
+            }
+
+            .logo-icon {
+                width: 28px;
+                height: 28px;
+                font-size: 0.85rem;
+                border-radius: 6px;
+            }
+
+            .logo h1 {
+                font-size: 0.9rem;
+            }
+
+            .logo span {
+                display: none;
+            }
+
+            .header-actions {
+                gap: 0.5rem;
+            }
+
+            .user-info {
+                padding: 4px 8px;
+                gap: 6px;
+            }
+
+            .user-info .avatar {
+                width: 28px;
+                height: 28px;
+                font-size: 0.75rem;
+            }
+
+            .user-info .details {
+                display: none;
+            }
+
+            .header-actions .btn {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            .header-actions .btn i {
+                margin-right: 0;
+            }
+
+            .header-actions .btn span {
+                display: none;
             }
 
             .form-row {
@@ -681,6 +719,36 @@
 
             .login-box {
                 padding: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.4rem 0.5rem;
+            }
+
+            .logo h1 {
+                font-size: 0.8rem;
+            }
+
+            .logo-icon {
+                width: 24px;
+                height: 24px;
+                font-size: 0.75rem;
+            }
+
+            .user-info {
+                padding: 3px 6px;
+            }
+
+            .user-info .avatar {
+                width: 24px;
+                height: 24px;
+                font-size: 0.65rem;
+            }
+
+            .header-actions .btn {
+                padding: 5px 8px;
             }
         }
 
