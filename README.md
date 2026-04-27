@@ -1,4 +1,4 @@
-# QR Attendance System
+# Mai Bhago Polytechnic - Attendance System
 
 A fully functional QR Code Attendance System with login for teachers and students.
 
