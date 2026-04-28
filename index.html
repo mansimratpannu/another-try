@@ -764,9 +764,15 @@
             gap: 1.5rem;
         }
 
-        .dashboard-cards {
+        .dashboard-main {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr 1.5fr;
+            gap: 1.25rem;
+        }
+
+        .dashboard-cards {
+            display: flex;
+            flex-direction: column;
             gap: 1.25rem;
         }
 
@@ -826,18 +832,18 @@
         .qr-scanner-section {
             background: var(--white);
             border-radius: 12px;
-            padding: 2rem;
+            padding: 1.5rem;
             box-shadow: 0 2px 12px var(--shadow);
             border: 1.5px solid var(--border);
         }
 
         .qr-scanner-header {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
 
         .qr-scanner-header h2 {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--dark);
             display: flex;
@@ -851,17 +857,16 @@
         }
 
         .qr-scanner-container {
-            max-width: 500px;
-            margin: 0 auto;
+            max-width: 100%;
             text-align: center;
         }
 
         .qr-camera-box {
             width: 100%;
             aspect-ratio: 1;
-            max-width: 400px;
-            max-height: 400px;
-            margin: 0 auto 1.5rem;
+            max-width: 280px;
+            max-height: 280px;
+            margin: 0 auto 1rem;
             border: 2px dashed var(--border);
             border-radius: 16px;
             background: var(--light);
@@ -889,31 +894,36 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .qr-placeholder i {
-            font-size: 4rem;
+            font-size: 3rem;
             color: var(--gray);
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .qr-placeholder p {
             color: var(--gray);
-            font-size: 0.95rem;
-            max-width: 280px;
+            font-size: 0.85rem;
+            max-width: 200px;
         }
 
         .qr-scanner-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 0.75rem;
             justify-content: center;
             flex-wrap: wrap;
         }
 
+        .qr-scanner-buttons .btn {
+            padding: 8px 16px;
+            font-size: 0.8rem;
+        }
+
         .scan-result {
-            margin-top: 1.25rem;
-            padding: 1rem;
+            margin-top: 1rem;
+            padding: 0.75rem;
             border-radius: 8px;
             display: none;
         }
@@ -931,11 +941,13 @@
         }
 
         /* Responsive */
-        @media (max-width: 768px) {
-            .dashboard-cards {
+        @media (max-width: 1024px) {
+            .dashboard-main {
                 grid-template-columns: 1fr;
             }
+        }
 
+        @media (max-width: 768px) {
             .dashboard-card {
                 padding: 1.25rem;
             }
@@ -955,12 +967,12 @@
             }
 
             .qr-camera-box {
-                max-width: 300px;
-                max-height: 300px;
+                max-width: 250px;
+                max-height: 250px;
             }
 
             .qr-placeholder i {
-                font-size: 3rem;
+                font-size: 2.5rem;
             }
         }
 
@@ -988,8 +1000,8 @@
             }
 
             .qr-camera-box {
-                max-width: 250px;
-                max-height: 250px;
+                max-width: 200px;
+                max-height: 200px;
             }
         }
     </style>
@@ -1258,55 +1270,58 @@
                 <h2 class="page-title">Student Dashboard</h2>
                 
                 <div class="student-dashboard">
-                    <!-- Dashboard Cards Row -->
-                    <div class="dashboard-cards">
-                        <div class="dashboard-card" onclick="showAvailableSessions()">
-                            <div class="dashboard-card-icon sessions">
-                                <i class="fas fa-calendar-check"></i>
-                            </div>
-                            <div class="dashboard-card-content">
-                                <h3 id="student-sessions">0</h3>
-                                <p>Available Sessions</p>
-                            </div>
-                        </div>
-                        <div class="dashboard-card" onclick="showMyAttendance()">
-                            <div class="dashboard-card-icon attendance">
-                                <i class="fas fa-check-double"></i>
-                            </div>
-                            <div class="dashboard-card-content">
-                                <h3 id="my-attendance">0</h3>
-                                <p>My Attendance</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- QR Scanner Section -->
-                    <div class="qr-scanner-section">
-                        <div class="qr-scanner-header">
-                            <h2>
-                                <i class="fas fa-qrcode"></i> Scan QR Code
-                            </h2>
-                        </div>
-                        <div class="qr-scanner-container">
-                            <div class="qr-camera-box" id="qr-camera-box">
-                                <video id="scanner-video" playsinline></video>
-                                <canvas id="scanner-canvas"></canvas>
-                                <div class="qr-placeholder" id="scanner-placeholder">
-                                    <i class="fas fa-camera"></i>
-                                    <p>Click "Start Scanner" to scan your teacher's QR code</p>
+                    <!-- Dashboard Main: Cards + QR Scanner side by side -->
+                    <div class="dashboard-main">
+                        <!-- Left Side: Two Cards -->
+                        <div class="dashboard-cards">
+                            <div class="dashboard-card" onclick="showAvailableSessions()">
+                                <div class="dashboard-card-icon sessions">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="dashboard-card-content">
+                                    <h3 id="student-sessions">0</h3>
+                                    <p>Available Sessions</p>
                                 </div>
                             </div>
-                            
-                            <div class="qr-scanner-buttons">
-                                <button class="btn btn-primary" id="start-scanner-btn" onclick="startScanner()">
-                                    <i class="fas fa-camera"></i> Start Scanner
-                                </button>
-                                <button class="btn btn-danger" id="stop-scanner-btn" onclick="stopScanner()" style="display: none;">
-                                    <i class="fas fa-stop"></i> Stop Scanner
-                                </button>
+                            <div class="dashboard-card" onclick="showMyAttendance()">
+                                <div class="dashboard-card-icon attendance">
+                                    <i class="fas fa-check-double"></i>
+                                </div>
+                                <div class="dashboard-card-content">
+                                    <h3 id="my-attendance">0</h3>
+                                    <p>My Attendance</p>
+                                </div>
                             </div>
+                        </div>
 
-                            <div class="scan-result" id="scan-result"></div>
+                        <!-- Right Side: QR Scanner -->
+                        <div class="qr-scanner-section">
+                            <div class="qr-scanner-header">
+                                <h2>
+                                    <i class="fas fa-qrcode"></i> Scan QR Code
+                                </h2>
+                            </div>
+                            <div class="qr-scanner-container">
+                                <div class="qr-camera-box" id="qr-camera-box">
+                                    <video id="scanner-video" playsinline></video>
+                                    <canvas id="scanner-canvas"></canvas>
+                                    <div class="qr-placeholder" id="scanner-placeholder">
+                                        <i class="fas fa-camera"></i>
+                                        <p>Click "Start Scanner" to scan your teacher's QR code</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="qr-scanner-buttons">
+                                    <button class="btn btn-primary" id="start-scanner-btn" onclick="startScanner()">
+                                        <i class="fas fa-camera"></i> Start Scanner
+                                    </button>
+                                    <button class="btn btn-danger" id="stop-scanner-btn" onclick="stopScanner()" style="display: none;">
+                                        <i class="fas fa-stop"></i> Stop Scanner
+                                    </button>
+                                </div>
+
+                                <div class="scan-result" id="scan-result"></div>
+                            </div>
                         </div>
                     </div>
 
