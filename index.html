@@ -835,6 +835,9 @@
             padding: 1.5rem;
             box-shadow: 0 2px 12px var(--shadow);
             border: 1.5px solid var(--border);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
         .qr-scanner-header {
@@ -858,14 +861,19 @@
 
         .qr-scanner-container {
             max-width: 100%;
+            flex: 1;
             text-align: center;
+            display: flex;
+            flex-direction: column;
         }
 
         .qr-camera-box {
             width: 100%;
             aspect-ratio: 1;
-            max-width: 280px;
-            max-height: 280px;
+            max-width: 100%;
+            max-height: 100%;
+            flex: 1;
+            min-height: 250px;
             margin: 0 auto 1rem;
             border: 2px dashed var(--border);
             border-radius: 16px;
@@ -898,15 +906,15 @@
         }
 
         .qr-placeholder i {
-            font-size: 3rem;
+            font-size: 4rem;
             color: var(--gray);
             margin-bottom: 0.75rem;
         }
 
         .qr-placeholder p {
             color: var(--gray);
-            font-size: 0.85rem;
-            max-width: 200px;
+            font-size: 0.9rem;
+            max-width: 280px;
         }
 
         .qr-scanner-buttons {
@@ -917,12 +925,12 @@
         }
 
         .qr-scanner-buttons .btn {
-            padding: 8px 16px;
-            font-size: 0.8rem;
+            padding: 10px 20px;
+            font-size: 0.85rem;
         }
 
         .scan-result {
-            margin-top: 1rem;
+            margin-top: auto;
             padding: 0.75rem;
             border-radius: 8px;
             display: none;
@@ -967,12 +975,11 @@
             }
 
             .qr-camera-box {
-                max-width: 250px;
-                max-height: 250px;
+                min-height: 200px;
             }
 
             .qr-placeholder i {
-                font-size: 2.5rem;
+                font-size: 3rem;
             }
         }
 
@@ -1000,8 +1007,7 @@
             }
 
             .qr-camera-box {
-                max-width: 200px;
-                max-height: 200px;
+                min-height: 180px;
             }
         }
     </style>
@@ -1318,7 +1324,7 @@
                         </div>
 
                         <!-- Right Side: QR Scanner -->
-                        <div class="qr-scanner-section">
+                        <div class="qr-scanner-section" style="min-height: 500px;">
                             <div class="qr-scanner-header">
                                 <h2>
                                     <i class="fas fa-qrcode"></i> Scan QR Code
