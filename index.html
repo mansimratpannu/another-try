@@ -756,6 +756,242 @@
         .hidden {
             display: none !important;
         }
+
+        /* Student Dashboard */
+        .student-dashboard {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+        }
+
+        .dashboard-card {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px var(--shadow);
+            border: 1.5px solid var(--border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 24px var(--shadow);
+            border-color: var(--primary);
+        }
+
+        .dashboard-card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .dashboard-card-icon.sessions {
+            background: linear-gradient(135deg, var(--success) 0%, #2ecc71 100%);
+        }
+
+        .dashboard-card-icon.attendance {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+
+        .dashboard-card-content h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .dashboard-card-content p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* QR Scanner Section */
+        .qr-scanner-section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 12px var(--shadow);
+            border: 1.5px solid var(--border);
+        }
+
+        .qr-scanner-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .qr-scanner-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .qr-scanner-header h2 i {
+            color: var(--primary);
+        }
+
+        .qr-scanner-container {
+            max-width: 500px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .qr-camera-box {
+            width: 100%;
+            aspect-ratio: 1;
+            max-width: 400px;
+            max-height: 400px;
+            margin: 0 auto 1.5rem;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .qr-camera-box video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 14px;
+            display: none;
+        }
+
+        .qr-camera-box.active video {
+            display: block;
+        }
+
+        .qr-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .qr-placeholder i {
+            font-size: 4rem;
+            color: var(--gray);
+            margin-bottom: 1rem;
+        }
+
+        .qr-placeholder p {
+            color: var(--gray);
+            font-size: 0.95rem;
+            max-width: 280px;
+        }
+
+        .qr-scanner-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .scan-result {
+            margin-top: 1.25rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .scan-result.success {
+            background: #e8f8f0;
+            border: 1.5px solid var(--success);
+            color: #1e7e34;
+        }
+
+        .scan-result.error {
+            background: #fde8e7;
+            border: 1.5px solid var(--danger);
+            color: #922b21;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-card {
+                padding: 1.25rem;
+            }
+
+            .dashboard-card-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+
+            .dashboard-card-content h3 {
+                font-size: 1.25rem;
+            }
+
+            .qr-scanner-section {
+                padding: 1.25rem;
+            }
+
+            .qr-camera-box {
+                max-width: 300px;
+                max-height: 300px;
+            }
+
+            .qr-placeholder i {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-card {
+                padding: 1rem;
+            }
+
+            .dashboard-card-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+
+            .dashboard-card-content h3 {
+                font-size: 1.1rem;
+            }
+
+            .dashboard-card-content p {
+                font-size: 0.8rem;
+            }
+
+            .qr-scanner-section {
+                padding: 1rem;
+            }
+
+            .qr-camera-box {
+                max-width: 250px;
+                max-height: 250px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1021,74 +1257,81 @@
             <div id="student-view" class="hidden">
                 <h2 class="page-title">Student Dashboard</h2>
                 
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon success">
-                            <i class="fas fa-calendar-check"></i>
+                <div class="student-dashboard">
+                    <!-- Dashboard Cards Row -->
+                    <div class="dashboard-cards">
+                        <div class="dashboard-card" onclick="showAvailableSessions()">
+                            <div class="dashboard-card-icon sessions">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <div class="dashboard-card-content">
+                                <h3 id="student-sessions">0</h3>
+                                <p>Available Sessions</p>
+                            </div>
                         </div>
-                        <div class="stat-info">
-                            <h3 id="student-sessions">0</h3>
-                            <p>Available Sessions</p>
+                        <div class="dashboard-card" onclick="showMyAttendance()">
+                            <div class="dashboard-card-icon attendance">
+                                <i class="fas fa-check-double"></i>
+                            </div>
+                            <div class="dashboard-card-content">
+                                <h3 id="my-attendance">0</h3>
+                                <p>My Attendance</p>
+                            </div>
                         </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-icon primary">
-                            <i class="fas fa-check-double"></i>
-                        </div>
-                        <div class="stat-info">
-                            <h3 id="my-attendance">0</h3>
-                            <p>My Attendance</p>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <i class="fas fa-camera"></i> Scan QR Code
-                        </h2>
-                    </div>
-                    <div class="scanner-container">
-                        <div class="scanner-placeholder" id="scanner-placeholder">
-                            <i class="fas fa-camera"></i>
-                            <p>Click "Start Scanner" to scan your teacher's QR code</p>
+                    <!-- QR Scanner Section -->
+                    <div class="qr-scanner-section">
+                        <div class="qr-scanner-header">
+                            <h2>
+                                <i class="fas fa-qrcode"></i> Scan QR Code
+                            </h2>
                         </div>
-                        <video id="scanner-video" playsinline></video>
-                        <canvas id="scanner-canvas"></canvas>
-                        
-                        <div style="margin-top: 1.5rem;">
-                            <button class="btn btn-primary" id="start-scanner-btn" onclick="startScanner()">
-                                <i class="fas fa-camera"></i> Start Scanner
-                            </button>
-                            <button class="btn btn-danger" id="stop-scanner-btn" onclick="stopScanner()" style="display: none;">
-                                <i class="fas fa-stop"></i> Stop Scanner
-                            </button>
+                        <div class="qr-scanner-container">
+                            <div class="qr-camera-box" id="qr-camera-box">
+                                <video id="scanner-video" playsinline></video>
+                                <canvas id="scanner-canvas"></canvas>
+                                <div class="qr-placeholder" id="scanner-placeholder">
+                                    <i class="fas fa-camera"></i>
+                                    <p>Click "Start Scanner" to scan your teacher's QR code</p>
+                                </div>
+                            </div>
+                            
+                            <div class="qr-scanner-buttons">
+                                <button class="btn btn-primary" id="start-scanner-btn" onclick="startScanner()">
+                                    <i class="fas fa-camera"></i> Start Scanner
+                                </button>
+                                <button class="btn btn-danger" id="stop-scanner-btn" onclick="stopScanner()" style="display: none;">
+                                    <i class="fas fa-stop"></i> Stop Scanner
+                                </button>
+                            </div>
+
+                            <div class="scan-result" id="scan-result"></div>
                         </div>
-
-                        <div class="scan-result" id="scan-result"></div>
                     </div>
-                </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">
-                            <i class="fas fa-history"></i> My Attendance History
-                        </h2>
-                    </div>
-                    <div class="table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Course</th>
-                                    <th>Subject</th>
-                                    <th>Date</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="my-attendance-body">
-                            </tbody>
-                        </table>
+                    <!-- Attendance History -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">
+                                <i class="fas fa-history"></i> My Attendance History
+                            </h2>
+                        </div>
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="my-attendance-body">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1344,6 +1587,28 @@
             });
         }
 
+        // ==================== Card Click Functions ====================
+        function showAvailableSessions() {
+            // Scroll to the QR scanner section and highlight it
+            const qrSection = document.querySelector('.qr-scanner-section');
+            if (qrSection) {
+                qrSection.scrollIntoView({ behavior: 'smooth' });
+                qrSection.style.boxShadow = '0 0 0 3px rgba(30, 58, 95, 0.3)';
+                setTimeout(() => {
+                    qrSection.style.boxShadow = '';
+                }, 2000);
+            }
+            showToast('Use the QR Scanner to mark attendance for available sessions', 'info');
+        }
+
+        function showMyAttendance() {
+            // Scroll to the attendance history section
+            const historySection = document.querySelector('#student-view .card:last-child');
+            if (historySection) {
+                historySection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
         // ==================== Sessions ====================
         async function createSession(e) {
             e.preventDefault();
@@ -1482,6 +1747,7 @@
             const placeholder = document.getElementById('scanner-placeholder');
             const startBtn = document.getElementById('start-scanner-btn');
             const stopBtn = document.getElementById('stop-scanner-btn');
+            const cameraBox = document.getElementById('qr-camera-box');
             
             try {
                 videoStream = await navigator.mediaDevices.getUserMedia({ 
@@ -1489,7 +1755,7 @@
                 });
                 
                 video.srcObject = videoStream;
-                video.style.display = 'block';
+                cameraBox.classList.add('active');
                 placeholder.style.display = 'none';
                 startBtn.style.display = 'none';
                 stopBtn.style.display = 'inline-flex';
@@ -1506,13 +1772,14 @@
             const placeholder = document.getElementById('scanner-placeholder');
             const startBtn = document.getElementById('start-scanner-btn');
             const stopBtn = document.getElementById('stop-scanner-btn');
+            const cameraBox = document.getElementById('qr-camera-box');
             
             if (videoStream) {
                 videoStream.getTracks().forEach(track => track.stop());
             }
             
-            video.style.display = 'none';
-            placeholder.style.display = 'block';
+            cameraBox.classList.remove('active');
+            placeholder.style.display = 'flex';
             startBtn.style.display = 'inline-flex';
             stopBtn.style.display = 'none';
         }
