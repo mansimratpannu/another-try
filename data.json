@@ -1,0 +1,28 @@
+{
+  "sessions": [],
+  "attendance": [],
+  "students": [
+    {
+      "id": "2",
+      "name": "Mansimrat",
+      "email": "kmansimrat16@gmail.com",
+      "studentId": "STU001"
+    }
+  ],
+  "users": [
+    {
+      "id": "1",
+      "name": "Harsimran Singh",
+      "email": "harsimran@school.com",
+      "password": "maibhagoteacher",
+      "role": "teacher"
+    },
+    {
+      "id": "2",
+      "name": "Mansimrat",
+      "email": "kmansimrat16@gmail.com",
+      "password": "maibhagostudent",
+      "role": "student"
+    }
+  ]
+}

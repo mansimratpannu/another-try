@@ -1133,7 +1133,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Password</label>
-                                <input type="password" class="form-input" id="student-password" placeholder="Enter password (default: student123)">
+                                <input type="password" class="form-input" id="student-password" placeholder="Enter password (default: maibhagostudent)">
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary">
@@ -1187,6 +1187,10 @@
                                 <input type="date" class="form-input" id="session-date" required>
                             </div>
                             <div class="form-group">
+                                <label class="form-label">Start Time</label>
+                                <input type="time" class="form-input" id="session-start-time" required>
+                            </div>
+                            <div class="form-group">
                                 <label class="form-label">QR Valid Duration (minutes)</label>
                                 <input type="number" class="form-input" id="session-duration" value="30" min="5" max="120" required>
                             </div>
@@ -1213,6 +1217,7 @@
                                     <th>Course</th>
                                     <th>Subject</th>
                                     <th>Date</th>
+                                    <th>Time</th>
                                     <th>Duration</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -1382,8 +1387,10 @@
         let countdownInterval = null;
         let videoStream = null;
 
-        // API Base URL - Update this to your deployed backend
-        const API_BASE = 'https://another-try-7x78.onrender.com/api';
+        // API Base URL - local app uses local server, deployed app uses Render backend
+        const API_BASE = ['localhost', '127.0.0.1'].includes(window.location.hostname)
+            ? '/api'
+            : 'https://another-try-7x78.onrender.com/api';
 
         // ==================== Initialization ====================
         document.addEventListener('DOMContentLoaded', () => {
@@ -1396,6 +1403,7 @@
             
             // Set default date
             document.getElementById('session-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('session-start-time').value = new Date().toTimeString().slice(0, 5);
             
             // Set up form listeners
             setupFormListeners();
@@ -1641,13 +1649,15 @@
             const subject = document.getElementById('session-subject').value;
             const courseName = document.getElementById('session-course').value;
             const date = document.getElementById('session-date').value;
+            const startTime = document.getElementById('session-start-time').value;
+            const startAt = new Date(`${date}T${startTime}`).toISOString();
             const duration = parseInt(document.getElementById('session-duration').value);
             
             try {
                 const response = await fetch(`${API_BASE}/sessions`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ subject, courseName, date, duration })
+                    body: JSON.stringify({ subject, courseName, date, startTime, startAt, duration })
                 });
                 
                 const result = await response.json();
@@ -1656,6 +1666,7 @@
                     showToast('Session created successfully', 'success');
                     document.getElementById('session-form').reset();
                     document.getElementById('session-date').value = new Date().toISOString().split('T')[0];
+                    document.getElementById('session-start-time').value = new Date().toTimeString().slice(0, 5);
                     await loadSessions();
                     updateTeacherDashboard();
                 } else {
@@ -1687,6 +1698,7 @@
                     <td>${session.courseName}</td>
                     <td>${session.subject}</td>
                     <td>${session.date}</td>
+                    <td>${session.startAt ? new Date(session.startAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (session.startTime || '-')}</td>
                     <td>${session.duration} min</td>
                     <td>${status}</td>
                     <td>
@@ -1707,7 +1719,8 @@
             filterSession.innerHTML = '<option value="">All Sessions</option>';
             
             sessions.forEach(session => {
-                const option = `<option value="${session.id}">${session.courseName} - ${session.subject} - ${session.date}</option>`;
+                const sessionTime = session.startAt ? new Date(session.startAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (session.startTime || '');
+                const option = `<option value="${session.id}">${session.courseName} - ${session.subject} - ${session.date} ${sessionTime}</option>`;
                 filterSession.innerHTML += option;
             });
         }
@@ -1724,11 +1737,12 @@
                     document.getElementById('qr-image').src = result.data.qrCode;
                     document.getElementById('qr-course-name').textContent = result.data.session.courseName;
                     document.getElementById('qr-subject').textContent = `Subject: ${result.data.session.subject}`;
-                    document.getElementById('qr-session-date').textContent = `Date: ${result.data.session.date}`;
+                    const sessionTime = result.data.session.startAt ? new Date(result.data.session.startAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : (result.data.session.startTime || '--');
+                    document.getElementById('qr-session-date').textContent = `Date: ${result.data.session.date} | Starts: ${sessionTime}`;
                     document.getElementById('qr-generated-at').textContent = `Generated at: ${new Date(result.data.session.qrGeneratedAt).toLocaleTimeString()}`;
                     
                     // Start countdown
-                    startCountdown(result.data.session.duration);
+                    startCountdown(result.data.session.duration, result.data.session.qrValidUntil);
                     
                     // Scroll to QR code
                     document.getElementById('qr-display-card').scrollIntoView({ behavior: 'smooth' });
@@ -1744,16 +1758,19 @@
             hideLoading();
         }
 
-        function startCountdown(minutes) {
+        function startCountdown(minutes, validUntil) {
             if (countdownInterval) clearInterval(countdownInterval);
             
-            let timeLeft = minutes * 60;
+            let timeLeft = validUntil ? Math.max(0, Math.ceil((new Date(validUntil).getTime() - Date.now()) / 1000)) : minutes * 60;
             const countdownEl = document.getElementById('qr-countdown');
             
             countdownInterval = setInterval(() => {
-                const mins = Math.floor(timeLeft / 60);
+                const hours = Math.floor(timeLeft / 3600);
+                const mins = Math.floor((timeLeft % 3600) / 60);
                 const secs = timeLeft % 60;
-                countdownEl.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                countdownEl.textContent = hours > 0
+                    ? `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+                    : `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
                 
                 if (timeLeft <= 0) {
                     clearInterval(countdownInterval);
