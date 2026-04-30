@@ -12,8 +12,8 @@ A fully functional QR Code Attendance System with login for teachers and student
 
 | Role | Email | Password |
 |------|-------|----------|
-| Teacher | teacher@school.com | teacher123 |
-| Student | john@school.com | student123 |
+| Teacher | harsimran@school.com | maibhagoteacher |
+| Student | kmansimrat16@gmail.com | maibhagostudent |
 
 ## Features
 
