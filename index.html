@@ -1471,6 +1471,7 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Student ID</th>
+                                            <th>Course</th>
                                         </tr>
                                     </thead>
                                     <tbody id="students-body">
@@ -1526,6 +1527,10 @@
                                     <div class="form-group">
                                         <label class="form-label">Student ID</label>
                                         <input type="text" class="form-input" id="student-id" placeholder="Enter student ID" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Course Name</label>
+                                        <input type="text" class="form-input" id="student-course" placeholder="Enter course name" required>
                                     </div>
                                     <div class="form-group">
                                         <label class="form-label">Password</label>
@@ -1788,6 +1793,7 @@
                         <td>${s.name}</td>
                         <td>${s.email}</td>
                         <td>${s.studentId}</td>
+                        <td>${s.courseName || '-'}</td>
                     </tr>
                 `).join('');
             }
@@ -1800,13 +1806,14 @@
             const name = document.getElementById('student-name').value;
             const email = document.getElementById('student-email').value;
             const studentId = document.getElementById('student-id').value;
+            const courseName = document.getElementById('student-course').value;
             const password = document.getElementById('student-password').value;
             
             try {
                 const response = await fetch(`${API_BASE}/students`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, email, studentId, password })
+                    body: JSON.stringify({ name, email, studentId, courseName, password })
                 });
                 
                 const result = await response.json();

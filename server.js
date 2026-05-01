@@ -30,7 +30,7 @@ function getDefaultData() {
         sessions: [],
         attendance: [],
         students: [
-            { id: '2', name: 'Mansimrat', email: 'kmansimrat16@gmail.com', studentId: 'STU001' }
+            { id: '2', name: 'Mansimrat', email: 'kmansimrat16@gmail.com', studentId: 'STU001', courseName: 'CSE' }
         ],
         users: [
         { id: '1', name: 'Harsimran Singh', email: 'harsimran@school.com', password: 'maibhagoteacher', role: 'teacher' },
@@ -79,14 +79,15 @@ app.get('/api/students', (req, res) => {
 
 // Add new student
 app.post('/api/students', (req, res) => {
-    const { name, email, studentId, password } = req.body;
+    const { name, email, studentId, courseName, password } = req.body;
     
-    if (!name || !email || !studentId) {
+    if (!name?.trim() || !email?.trim() || !studentId?.trim() || !courseName?.trim()) {
         return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedStudentId = studentId.trim().toUpperCase();
+    const normalizedCourseName = courseName.trim();
 
     const existingUser = db.users.find(u => u.email.toLowerCase() === normalizedEmail);
     if (existingUser) {
@@ -102,7 +103,8 @@ app.post('/api/students', (req, res) => {
         id: uuidv4(),
         name: name.trim(),
         email: normalizedEmail,
-        studentId: normalizedStudentId
+        studentId: normalizedStudentId,
+        courseName: normalizedCourseName
     };
     
     db.students.push(newStudent);

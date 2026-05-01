@@ -21,7 +21,8 @@
       "id": "2",
       "name": "Mansimrat",
       "email": "kmansimrat16@gmail.com",
-      "studentId": "STU001"
+      "studentId": "STU001",
+      "courseName": "CSE"
     }
   ],
   "users": [
