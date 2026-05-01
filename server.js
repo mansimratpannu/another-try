@@ -124,6 +124,58 @@ app.post('/api/students', (req, res) => {
     res.json({ success: true, data: newStudent, message: 'Student added successfully' });
 });
 
+// Update student details
+app.put('/api/students/:id', (req, res) => {
+    const { name, email, studentId, courseName, password } = req.body;
+    const student = db.students.find(s => s.id === req.params.id);
+
+    if (!student) {
+        return res.status(404).json({ success: false, message: 'Student not found' });
+    }
+
+    if (!name?.trim() || !email?.trim() || !studentId?.trim() || !courseName?.trim()) {
+        return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedStudentId = studentId.trim().toUpperCase();
+    const normalizedCourseName = courseName.trim();
+
+    const existingUser = db.users.find(u => u.id !== student.id && u.email.toLowerCase() === normalizedEmail);
+    if (existingUser) {
+        return res.status(400).json({ success: false, message: 'A user with this email already exists' });
+    }
+
+    const existingStudent = db.students.find(s => s.id !== student.id && s.studentId.toUpperCase() === normalizedStudentId);
+    if (existingStudent) {
+        return res.status(400).json({ success: false, message: 'A student with this student ID already exists' });
+    }
+
+    student.name = name.trim();
+    student.email = normalizedEmail;
+    student.studentId = normalizedStudentId;
+    student.courseName = normalizedCourseName;
+
+    const user = db.users.find(u => u.id === student.id);
+    if (user) {
+        user.name = student.name;
+        user.email = normalizedEmail;
+        if (password?.trim()) {
+            user.password = password;
+        }
+    }
+
+    db.attendance.forEach(record => {
+        if (record.studentId === student.id) {
+            record.studentName = student.name;
+            record.studentIdNum = student.studentId;
+        }
+    });
+
+    saveData();
+    res.json({ success: true, data: student, message: 'Student updated successfully' });
+});
+
 // Create attendance session
 app.post('/api/sessions', (req, res) => {
     const { subject, courseName, date, startTime, startAt, duration } = req.body;
@@ -152,6 +204,43 @@ app.post('/api/sessions', (req, res) => {
     db.sessions.push(session);
     saveData();
     res.json({ success: true, data: session, message: 'Session created successfully' });
+});
+
+// Update session details
+app.put('/api/sessions/:id', (req, res) => {
+    const { subject, courseName, date, startTime, startAt, duration, isActive } = req.body;
+    const session = db.sessions.find(s => s.id === req.params.id);
+
+    if (!session) {
+        return res.status(404).json({ success: false, message: 'Session not found' });
+    }
+
+    if (!courseName?.trim() || !subject?.trim() || !date || !startTime || !duration) {
+        return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    const sessionStartAt = startAt || new Date(`${date}T${startTime}`).toISOString();
+
+    session.courseName = courseName.trim();
+    session.subject = subject.trim();
+    session.date = date;
+    session.startTime = startTime;
+    session.startAt = sessionStartAt;
+    session.duration = Number(duration);
+    session.isActive = Boolean(isActive);
+    session.qrCode = null;
+    session.qrGeneratedAt = null;
+    session.qrValidUntil = null;
+
+    db.attendance.forEach(record => {
+        if (record.sessionId === session.id) {
+            record.courseName = session.courseName;
+            record.subject = session.subject;
+        }
+    });
+
+    saveData();
+    res.json({ success: true, data: session, message: 'Session updated successfully' });
 });
 
 // Get all sessions

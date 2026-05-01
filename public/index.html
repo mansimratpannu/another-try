@@ -359,6 +359,65 @@
             font-size: 0.8rem;
         }
 
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.52);
+            z-index: 2500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            width: min(560px, 100%);
+            max-height: 90vh;
+            overflow-y: auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.24);
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin: 0;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 50%;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
         /* QR Display */
         .qr-display {
             text-align: center;
@@ -1108,6 +1167,7 @@
                                             <th>Email</th>
                                             <th>Student ID</th>
                                             <th>Course</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody id="students-body">
@@ -1268,6 +1328,85 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
 
+    <div class="modal-overlay" id="edit-modal" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+            <div class="modal-header">
+                <h2 class="modal-title" id="edit-modal-title">Edit Details</h2>
+                <button type="button" class="btn btn-outline modal-close" onclick="closeEditModal()" aria-label="Close edit form">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="edit-student-form" class="hidden">
+                    <input type="hidden" id="edit-student-record-id">
+                    <div class="form-group">
+                        <label class="form-label">Student Name</label>
+                        <input type="text" class="form-input" id="edit-student-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" id="edit-student-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Student ID</label>
+                        <input type="text" class="form-input" id="edit-student-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Course Name</label>
+                        <input type="text" class="form-input" id="edit-student-course" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-input" id="edit-student-password" placeholder="Leave blank to keep current password">
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Student
+                        </button>
+                    </div>
+                </form>
+
+                <form id="edit-session-form" class="hidden">
+                    <input type="hidden" id="edit-session-record-id">
+                    <div class="form-group">
+                        <label class="form-label">Course Name</label>
+                        <input type="text" class="form-input" id="edit-session-course" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-input" id="edit-session-subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Date</label>
+                        <input type="date" class="form-input" id="edit-session-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Start Time</label>
+                        <input type="time" class="form-input" id="edit-session-start-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">QR Valid Duration (minutes)</label>
+                        <input type="number" class="form-input" id="edit-session-duration" min="5" max="120" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-input" id="edit-session-status">
+                            <option value="true">Active</option>
+                            <option value="false">Expired</option>
+                        </select>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Session
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <script>
         // ==================== Global Variables ====================
@@ -1309,6 +1448,9 @@
             
             // Session form (teacher only)
             document.getElementById('session-form').addEventListener('submit', createSession);
+
+            document.getElementById('edit-student-form').addEventListener('submit', updateStudent);
+            document.getElementById('edit-session-form').addEventListener('submit', updateSession);
             
         }
 
@@ -1421,9 +1563,78 @@
                         <td>${s.email}</td>
                         <td>${s.studentId}</td>
                         <td>${s.courseName || '-'}</td>
+                        <td>
+                            <button class="btn btn-outline btn-sm" onclick="openStudentEditor('${s.id}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                        </td>
                     </tr>
                 `).join('');
             }
+        }
+
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('active');
+            document.getElementById('edit-modal').setAttribute('aria-hidden', 'true');
+            document.getElementById('edit-student-form').classList.add('hidden');
+            document.getElementById('edit-session-form').classList.add('hidden');
+        }
+
+        function openStudentEditor(studentId) {
+            if (currentUser?.role !== 'teacher') return;
+            const student = students.find(s => s.id === studentId);
+            if (!student) {
+                showToast('Student not found', 'error');
+                return;
+            }
+
+            document.getElementById('edit-modal-title').textContent = 'Edit Student';
+            document.getElementById('edit-student-record-id').value = student.id;
+            document.getElementById('edit-student-name').value = student.name || '';
+            document.getElementById('edit-student-email').value = student.email || '';
+            document.getElementById('edit-student-id').value = student.studentId || '';
+            document.getElementById('edit-student-course').value = student.courseName || '';
+            document.getElementById('edit-student-password').value = '';
+            document.getElementById('edit-student-form').classList.remove('hidden');
+            document.getElementById('edit-session-form').classList.add('hidden');
+            document.getElementById('edit-modal').classList.add('active');
+            document.getElementById('edit-modal').setAttribute('aria-hidden', 'false');
+        }
+
+        async function updateStudent(e) {
+            e.preventDefault();
+            showLoading();
+
+            const id = document.getElementById('edit-student-record-id').value;
+            const name = document.getElementById('edit-student-name').value;
+            const email = document.getElementById('edit-student-email').value;
+            const studentId = document.getElementById('edit-student-id').value;
+            const courseName = document.getElementById('edit-student-course').value;
+            const password = document.getElementById('edit-student-password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/students/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, studentId, courseName, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Student updated successfully', 'success');
+                    closeEditModal();
+                    await loadStudents();
+                    await loadAttendance();
+                    updateTeacherDashboard();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error updating student', 'error');
+            }
+
+            hideLoading();
         }
 
         async function addStudent(e) {
@@ -1557,7 +1768,7 @@
             tbody.innerHTML = '';
             
             if (sessions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No sessions yet</h3><p>Create a new session to get started</p></td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-calendar-alt"></i><h3>No sessions yet</h3><p>Create a new session to get started</p></td></tr>';
                 return;
             }
             
@@ -1575,6 +1786,9 @@
                     <td>${session.duration} min</td>
                     <td>${status}</td>
                     <td>
+                        <button class="btn btn-outline btn-sm" onclick="openSessionEditor('${session.id}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
                         <button class="btn btn-primary btn-sm" onclick="viewQR('${session.id}')">
                             <i class="fas fa-qrcode"></i> View QR
                         </button>
@@ -1582,6 +1796,66 @@
                 `;
                 tbody.appendChild(row);
             });
+        }
+
+        function openSessionEditor(sessionId) {
+            if (currentUser?.role !== 'teacher') return;
+            const session = sessions.find(s => s.id === sessionId);
+            if (!session) {
+                showToast('Session not found', 'error');
+                return;
+            }
+
+            document.getElementById('edit-modal-title').textContent = 'Edit Session';
+            document.getElementById('edit-session-record-id').value = session.id;
+            document.getElementById('edit-session-course').value = session.courseName || '';
+            document.getElementById('edit-session-subject').value = session.subject || '';
+            document.getElementById('edit-session-date').value = session.date || new Date().toISOString().split('T')[0];
+            document.getElementById('edit-session-start-time').value = session.startTime || (session.startAt ? new Date(session.startAt).toTimeString().slice(0, 5) : '');
+            document.getElementById('edit-session-duration').value = session.duration || 30;
+            document.getElementById('edit-session-status').value = String(Boolean(session.isActive));
+            document.getElementById('edit-session-form').classList.remove('hidden');
+            document.getElementById('edit-student-form').classList.add('hidden');
+            document.getElementById('edit-modal').classList.add('active');
+            document.getElementById('edit-modal').setAttribute('aria-hidden', 'false');
+        }
+
+        async function updateSession(e) {
+            e.preventDefault();
+            showLoading();
+
+            const id = document.getElementById('edit-session-record-id').value;
+            const courseName = document.getElementById('edit-session-course').value;
+            const subject = document.getElementById('edit-session-subject').value;
+            const date = document.getElementById('edit-session-date').value;
+            const startTime = document.getElementById('edit-session-start-time').value;
+            const startAt = new Date(`${date}T${startTime}`).toISOString();
+            const duration = parseInt(document.getElementById('edit-session-duration').value);
+            const isActive = document.getElementById('edit-session-status').value === 'true';
+
+            try {
+                const response = await fetch(`${API_BASE}/sessions/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ subject, courseName, date, startTime, startAt, duration, isActive })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showToast('Session updated successfully', 'success');
+                    closeEditModal();
+                    await loadSessions();
+                    await loadAttendance();
+                    updateTeacherDashboard();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            } catch (error) {
+                showToast('Error updating session', 'error');
+            }
+
+            hideLoading();
         }
 
         // ==================== QR Code Generation ====================
