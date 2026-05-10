@@ -566,6 +566,11 @@
             color: #1e7e34;
         }
 
+        .status-absent {
+            background: #fde8e7;
+            color: #922b21;
+        }
+
         .status-active {
             background: #e8f0f8;
             color: #1e4e8a;
@@ -1883,24 +1888,103 @@
             }
         ];
 
-        const demoUsers = [
+        const demoAttendance = [
             {
-                id: 'teacher-demo',
-                name: 'Demo Teacher',
-                email: 'teacher@demo.com',
-                password: 'demo123',
-                role: 'teacher'
+                id: 'att-001',
+                studentId: 'stu-001',
+                studentName: 'Amandeep Kaur',
+                studentIdNum: 'CSE-2026-001',
+                sessionId: 'session-001',
+                courseName: 'Computer Science Engineering',
+                subject: 'Data Structures',
+                markedAt: `${new Date().toISOString().split('T')[0]}T09:42:00`
             },
             {
-                id: 'stu-001',
-                name: 'Amandeep Kaur',
-                email: 'student@demo.com',
-                password: 'demo123',
-                role: 'student',
-                studentId: 'CSE-2026-001',
-                courseName: 'Computer Science Engineering'
+                id: 'att-002',
+                studentId: 'stu-002',
+                studentName: 'Simranjit Kaur',
+                studentIdNum: 'CSE-2026-002',
+                sessionId: 'session-001',
+                courseName: 'Computer Science Engineering',
+                subject: 'Data Structures',
+                markedAt: `${new Date().toISOString().split('T')[0]}T09:44:00`
+            },
+            {
+                id: 'att-003',
+                studentId: 'stu-004',
+                studentName: 'Navjot Kaur',
+                studentIdNum: 'IT-2026-009',
+                sessionId: 'session-002',
+                courseName: 'Information Technology',
+                subject: 'Database Management Systems',
+                markedAt: `${new Date().toISOString().split('T')[0]}T11:08:00`
+            },
+            {
+                id: 'att-004',
+                studentId: 'stu-003',
+                studentName: 'Harpreet Kaur',
+                studentIdNum: 'ECE-2026-014',
+                sessionId: 'session-003',
+                courseName: 'Electronics and Communication',
+                subject: 'Digital Electronics',
+                markedAt: '2026-05-09T10:24:00'
+            },
+            {
+                id: 'att-005',
+                studentId: 'stu-006',
+                studentName: 'Jasleen Kaur',
+                studentIdNum: 'CE-2026-018',
+                sessionId: 'session-004',
+                courseName: 'Civil Engineering',
+                subject: 'Surveying',
+                markedAt: '2026-05-08T13:41:00'
+            },
+            {
+                id: 'att-006',
+                studentId: 'stu-005',
+                studentName: 'Gurleen Kaur',
+                studentIdNum: 'ME-2026-021',
+                sessionId: 'session-004',
+                courseName: 'Mechanical Engineering',
+                subject: 'Workshop Practice',
+                markedAt: '2026-05-08T14:05:00'
             }
         ];
+
+        function getApiList(result, demoList, key) {
+            const apiList = Array.isArray(result)
+                ? result
+                : Array.isArray(result?.data)
+                    ? result.data
+                    : Array.isArray(result?.[key])
+                        ? result[key]
+                        : [];
+            const merged = [...apiList];
+
+            demoList.forEach(demoItem => {
+                if (!merged.some(item => item.id === demoItem.id)) {
+                    merged.push(demoItem);
+                }
+            });
+
+            return merged;
+        }
+
+        function getStudentAttendance() {
+            const matchingRecords = attendance.filter(record => {
+                return record.studentId === currentUser.id || record.studentIdNum === currentUser.studentId;
+            });
+
+            if (matchingRecords.length) return matchingRecords;
+
+            return demoAttendance.slice(0, 3).map(record => ({
+                ...record,
+                studentId: currentUser.id,
+                studentName: currentUser.name,
+                studentIdNum: currentUser.studentId || record.studentIdNum,
+                courseName: currentUser.courseName || record.courseName
+            }));
+        }
 
         // ==================== Initialization ====================
         document.addEventListener('DOMContentLoaded', () => {
@@ -1960,16 +2044,7 @@
                     showToast(result.message, 'error');
                 }
             } catch (error) {
-                const demoUser = demoUsers.find(user => user.email === email && user.password === password);
-                if (demoUser) {
-                    const { password: _password, ...userWithoutPassword } = demoUser;
-                    currentUser = userWithoutPassword;
-                    localStorage.setItem('qrUser', JSON.stringify(currentUser));
-                    showMainApp();
-                    showToast('Welcome, ' + currentUser.name + '!', 'success');
-                } else {
-                    showToast('Login failed. Try teacher@demo.com / demo123', 'error');
-                }
+                showToast('Login failed', 'error');
             }
             
             hideLoading();
@@ -2039,7 +2114,7 @@
             try {
                 const response = await fetch(`${API_BASE}/students`);
                 const result = await response.json();
-                students = result.data?.length ? result.data : [...demoStudents];
+                students = getApiList(result, demoStudents, 'students');
             } catch (error) {
                 students = [...demoStudents];
             }
@@ -2167,7 +2242,7 @@
             try {
                 const response = await fetch(`${API_BASE}/sessions`);
                 const result = await response.json();
-                sessions = result.data?.length ? result.data : [...demoSessions];
+                sessions = getApiList(result, demoSessions, 'sessions');
             } catch (error) {
                 sessions = [...demoSessions];
             }
@@ -2177,9 +2252,9 @@
             try {
                 const response = await fetch(`${API_BASE}/attendance`);
                 const result = await response.json();
-                attendance = result.data || [];
+                attendance = getApiList(result, demoAttendance, 'attendance');
             } catch (error) {
-                attendance = [];
+                attendance = [...demoAttendance];
             }
         }
 
@@ -2201,7 +2276,7 @@
             document.getElementById('student-sessions').textContent = activeSessions.length;
             
             // My attendance
-            const myAttendance = attendance.filter(a => a.studentId === currentUser.id);
+            const myAttendance = getStudentAttendance();
             document.getElementById('my-attendance').textContent = myAttendance.length;
             
             // Render my attendance
@@ -2579,58 +2654,77 @@
         }
 
         // ==================== Attendance Records ====================
-        function renderAttendance() {
+        function getAttendanceRows(sessionId = '') {
+            const sessionList = sessionId ? sessions.filter(session => session.id === sessionId) : sessions;
+            const rows = [];
+
+            sessionList.forEach(session => {
+                const enrolledStudents = students.filter(student => {
+                    return !session.courseName || !student.courseName || student.courseName === session.courseName;
+                });
+                const roster = enrolledStudents.length ? enrolledStudents : students;
+
+                roster.forEach(student => {
+                    const presentRecord = attendance.find(record => {
+                        return record.sessionId === session.id &&
+                            (record.studentId === student.id || record.studentIdNum === student.studentId);
+                    });
+
+                    rows.push({
+                        studentName: presentRecord?.studentName || student.name,
+                        studentIdNum: presentRecord?.studentIdNum || student.studentId,
+                        courseName: session.courseName || student.courseName || presentRecord?.courseName || '-',
+                        subject: session.subject || presentRecord?.subject || '-',
+                        markedAt: presentRecord?.markedAt || '',
+                        status: presentRecord ? 'Present' : 'Absent'
+                    });
+                });
+            });
+
+            return rows;
+        }
+
+        function renderAttendanceRows(rows, emptyIcon, emptyTitle, emptyMessage) {
             const tbody = document.getElementById('attendance-body');
             tbody.innerHTML = '';
-            
-            if (attendance.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-clipboard-list"></i><h3>No attendance records</h3><p>Mark attendance to see records here</p></td></tr>';
+
+            if (rows.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state"><i class="fas ${emptyIcon}"></i><h3>${emptyTitle}</h3><p>${emptyMessage}</p></td></tr>`;
                 return;
             }
-            
-            attendance.forEach(record => {
+
+            rows.forEach(record => {
+                const isPresent = record.status === 'Present';
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${record.studentName}</td>
                     <td>${record.studentIdNum}</td>
                     <td>${record.courseName}</td>
                     <td>${record.subject || '-'}</td>
-                    <td>${new Date(record.markedAt).toLocaleString()}</td>
-                    <td><span class="status-badge status-present">Present</span></td>
+                    <td>${record.markedAt ? new Date(record.markedAt).toLocaleString() : '-'}</td>
+                    <td><span class="status-badge ${isPresent ? 'status-present' : 'status-absent'}">${record.status}</span></td>
                 `;
                 tbody.appendChild(row);
             });
         }
 
+        function renderAttendance() {
+            renderAttendanceRows(
+                getAttendanceRows(),
+                'fa-clipboard-list',
+                'No attendance records',
+                'Add students and sessions to see attendance here'
+            );
+        }
+
         function filterAttendance() {
             const sessionId = document.getElementById('filter-session').value;
-            
-            let filtered = attendance;
-            
-            if (sessionId) {
-                filtered = filtered.filter(a => a.sessionId === sessionId);
-            }
-            
-            const tbody = document.getElementById('attendance-body');
-            tbody.innerHTML = '';
-            
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-search"></i><h3>No records found</h3><p>Try adjusting your filters</p></td></tr>';
-                return;
-            }
-            
-            filtered.forEach(record => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${record.studentName}</td>
-                    <td>${record.studentIdNum}</td>
-                    <td>${record.courseName}</td>
-                    <td>${record.subject || '-'}</td>
-                    <td>${new Date(record.markedAt).toLocaleString()}</td>
-                    <td><span class="status-badge status-present">Present</span></td>
-                `;
-                tbody.appendChild(row);
-            });
+            renderAttendanceRows(
+                getAttendanceRows(sessionId),
+                'fa-search',
+                'No records found',
+                'Try adjusting your filters'
+            );
         }
 
         // ==================== Utility Functions ====================
