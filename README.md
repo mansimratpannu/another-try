@@ -27,4 +27,4 @@ A fully functional QR Code Attendance System with login for teachers and student
 2. Select "main" branch as source
 3. Save and wait for deployment
 
-The site will be available at `https://yourusername.github.io/repository-name`
+https://mansimratpannu.github.io/another-try/
